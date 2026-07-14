@@ -1,4 +1,5 @@
 import type { EtapeNum, TypeBail, WizardData } from '@/types'
+import { diagnosticAmianteRequis, diagnosticPlombRequis } from '@/lib/diagnostics'
 
 export interface EtapeDef {
   numero: EtapeNum
@@ -138,6 +139,30 @@ export function etapeValide(numero: EtapeNum, data: WizardData): boolean {
           rempli(locataire.adresseActuelle) &&
           rempli(locataire.email)
       )
+
+    case 4: {
+      const logement = data.etape4
+      const diagnosticsOk =
+        (!diagnosticPlombRequis(logement.periodeConstruction) ||
+          logement.presencePlomb !== null) &&
+        (!diagnosticAmianteRequis(logement.periodeConstruction) ||
+          logement.presenceAmiante !== null)
+
+      return (
+        rempli(logement.adresse) &&
+        rempli(logement.typeLogement) &&
+        rempli(logement.surface) &&
+        rempli(logement.nbPieces) &&
+        rempli(logement.nbChambres) &&
+        rempli(logement.periodeConstruction) &&
+        rempli(logement.regimeJuridique) &&
+        rempli(logement.chauffage) &&
+        rempli(logement.eauChaude) &&
+        rempli(logement.dpeClasse) &&
+        rempli(logement.gesClasse) &&
+        diagnosticsOk
+      )
+    }
 
     default:
       return true
