@@ -82,7 +82,7 @@ export interface Etape4 {
   parking: boolean
   parkingNum: string
   jardin: boolean
-  dpéClasse: ClasseDPE
+  dpeClasse: ClasseDPE
   gesClasse: ClasseDPE
   presencePlomb: boolean | null
   presenceAmiante: boolean | null
@@ -105,6 +105,16 @@ export interface Etape5 {
   motifComplement: string
 }
 
+// --- Pièces du logement (déduites de l'étape 4, utilisées aux étapes 6 et 7) ---
+export type CategoriePiece =
+  | 'entree'
+  | 'sejour'
+  | 'chambre'
+  | 'cuisine'
+  | 'salle_de_bain'
+  | 'wc'
+  | 'autre'
+
 // --- Étape 6 : Inventaire des meubles (meublé uniquement) ---
 export interface EtatMeuble {
   present: boolean
@@ -114,6 +124,7 @@ export interface EtatMeuble {
 
 export interface InventairePiece {
   nom: string
+  categorie: CategoriePiece
   meubles: Record<string, EtatMeuble>
 }
 
