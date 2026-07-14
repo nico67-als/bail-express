@@ -1,4 +1,4 @@
-import type { EtapeNum, TypeBail } from '@/types'
+import type { EtapeNum, TypeBail, WizardData } from '@/types'
 
 export interface EtapeDef {
   numero: EtapeNum
@@ -90,4 +90,56 @@ export function etapePrecedente(
   const visibles = etapesVisibles(typeBail)
   const index = visibles.findIndex((etape) => etape.numero === courante)
   return index <= 0 ? null : visibles[index - 1].numero
+}
+
+function rempli(valeur: string | number | null | ''): boolean {
+  return valeur !== '' && valeur !== null
+}
+
+/**
+ * Une étape non encore développée (4 à 8 pour l'instant) ne doit jamais bloquer le
+ * bouton « Continuer » : il n'y a rien à y valider tant que son formulaire n'existe pas.
+ */
+export function etapeValide(numero: EtapeNum, data: WizardData): boolean {
+  switch (numero) {
+    case 1:
+      return rempli(data.etape1.typeBail) && rempli(data.etape1.usage)
+
+    case 2: {
+      const { bailleur } = data.etape2
+      const bailleurValide =
+        bailleur.type === 'physique'
+          ? rempli(bailleur.civilite) &&
+            rempli(bailleur.nom) &&
+            rempli(bailleur.prenom) &&
+            rempli(bailleur.dateNaissance) &&
+            rempli(bailleur.lieuNaissance) &&
+            rempli(bailleur.nationalite) &&
+            rempli(bailleur.adresse)
+          : rempli(bailleur.raisonSociale) &&
+            rempli(bailleur.formeJuridique) &&
+            rempli(bailleur.siret) &&
+            rempli(bailleur.representant) &&
+            rempli(bailleur.qualite) &&
+            rempli(bailleur.adresseSiege)
+
+      return bailleurValide && rempli(data.etape2.email) && rempli(data.etape2.telephone)
+    }
+
+    case 3:
+      return data.etape3.locataires.every(
+        (locataire) =>
+          rempli(locataire.civilite) &&
+          rempli(locataire.nom) &&
+          rempli(locataire.prenom) &&
+          rempli(locataire.dateNaissance) &&
+          rempli(locataire.lieuNaissance) &&
+          rempli(locataire.nationalite) &&
+          rempli(locataire.adresseActuelle) &&
+          rempli(locataire.email)
+      )
+
+    default:
+      return true
+  }
 }

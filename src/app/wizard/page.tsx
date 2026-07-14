@@ -3,8 +3,10 @@
 import { useSyncExternalStore } from 'react'
 import WizardLayout from '@/components/wizard/WizardLayout'
 import Etape1 from '@/components/wizard/Etape1'
+import Etape2 from '@/components/wizard/Etape2'
+import Etape3 from '@/components/wizard/Etape3'
 import { useWizardStore } from '@/store/wizard-store'
-import { etapeSuivante } from '@/lib/etapes'
+import { etapeSuivante, etapeValide } from '@/lib/etapes'
 
 /**
  * Le store est persisté dans le localStorage : il est déjà réhydraté au premier rendu
@@ -49,6 +51,8 @@ export default function WizardPage() {
 
   const ETAPES_RENDUES: Partial<Record<number, React.ReactNode>> = {
     1: <Etape1 />,
+    2: <Etape2 />,
+    3: <Etape3 />,
   }
 
   const contenu = ETAPES_RENDUES[etapeCourante] ?? (
@@ -57,7 +61,7 @@ export default function WizardPage() {
     </p>
   )
 
-  const bloque = etapeCourante === 1 && (!data.etape1.typeBail || !data.etape1.usage)
+  const bloque = !etapeValide(etapeCourante, data)
 
   return (
     <WizardLayout onSuivant={allerSuivant} suivantDisabled={bloque}>
