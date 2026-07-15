@@ -8,6 +8,7 @@ import Etape3 from '@/components/wizard/Etape3'
 import Etape4 from '@/components/wizard/Etape4'
 import Etape5 from '@/components/wizard/Etape5'
 import Etape6 from '@/components/wizard/Etape6'
+import Etape7 from '@/components/wizard/Etape7'
 import { useWizardStore } from '@/store/wizard-store'
 import { etapeSuivante, etapeValide } from '@/lib/etapes'
 
@@ -59,6 +60,7 @@ export default function WizardPage() {
     4: <Etape4 />,
     5: <Etape5 />,
     6: <Etape6 />,
+    7: <Etape7 />,
   }
 
   const contenu = ETAPES_RENDUES[etapeCourante] ?? (

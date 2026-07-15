@@ -203,6 +203,27 @@ export function etapeValide(numero: EtapeNum, data: WizardData): boolean {
         Object.values(piece.meubles).every((meuble) => !meuble.present || rempli(meuble.etat))
       )
 
+    case 7: {
+      const edl = data.etape7
+      const elements = [
+        'plafond',
+        'murs',
+        'sol',
+        'fenetres',
+        'volets',
+        'porte',
+        'elec',
+        'chauffage',
+        'luminaire',
+      ] as const
+
+      const piecesOk = edl.pieces.every((piece) =>
+        elements.every((cle) => rempli(piece[cle].etat))
+      )
+
+      return rempli(edl.dateEdl) && rempli(edl.nbCles) && piecesOk
+    }
+
     default:
       return true
   }
