@@ -195,6 +195,14 @@ export function etapeValide(numero: EtapeNum, data: WizardData): boolean {
       )
     }
 
+    case 6:
+      // Le décret impose la liste des meubles, mais pas de bloquer le formulaire tant que
+      // l'utilisateur n'a pas coché chaque case : seul un meuble déclaré présent doit avoir
+      // un état renseigné, pour rester exploitable dans le PDF généré.
+      return data.etape6.pieces.every((piece) =>
+        Object.values(piece.meubles).every((meuble) => !meuble.present || rempli(meuble.etat))
+      )
+
     default:
       return true
   }
