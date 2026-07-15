@@ -1,5 +1,6 @@
 import type { EtapeNum, TypeBail, WizardData } from '@/types'
 import { diagnosticAmianteRequis, diagnosticPlombRequis } from '@/lib/diagnostics'
+import { depotGarantieMax, forfaitChargesAutorise } from '@/lib/financier'
 
 export interface EtapeDef {
   numero: EtapeNum
@@ -161,6 +162,36 @@ export function etapeValide(numero: EtapeNum, data: WizardData): boolean {
         rempli(logement.dpeClasse) &&
         rempli(logement.gesClasse) &&
         diagnosticsOk
+      )
+    }
+
+    case 5: {
+      const fin = data.etape5
+      const plafondDG = depotGarantieMax(data.etape1.typeBail, fin.loyerHC)
+      const dgOk =
+        plafondDG === null || fin.depotGarantie === '' || fin.depotGarantie <= plafondDG
+      const chargesOk =
+        fin.typeCharges !== 'forfait' || forfaitChargesAutorise(data.etape1.typeBail)
+      const irlOk = !fin.revisionIRL || rempli(fin.trimestreIRL)
+      const zoneOk =
+        !fin.zoneTendue ||
+        (rempli(fin.loyerReferenceMajore) &&
+          (fin.complementLoyer === '' ||
+            fin.complementLoyer <= 0 ||
+            rempli(fin.motifComplement)))
+
+      return (
+        rempli(fin.dateEntree) &&
+        rempli(fin.loyerHC) &&
+        rempli(fin.typeCharges) &&
+        rempli(fin.montantCharges) &&
+        rempli(fin.datePaiement) &&
+        rempli(fin.modePaiement) &&
+        rempli(fin.depotGarantie) &&
+        dgOk &&
+        chargesOk &&
+        irlOk &&
+        zoneOk
       )
     }
 
