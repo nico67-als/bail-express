@@ -46,10 +46,10 @@
 
 ## Heure 5 — Étapes 6 et 7 du wizard (avec Claude)
 
-- [ ] `src/components/wizard/Etape6.tsx` — inventaire meubles (pièces dynamiques, meublé seulement)
-- [ ] `src/components/wizard/Etape7.tsx` — état des lieux (compteurs + pièces dynamiques)
-- [ ] `src/components/wizard/Etape8.tsx` — récapitulatif de toutes les données saisies
-- [ ] Test complet du tunnel étape 1 → 8 avec des données réelles
+- [x] `src/components/wizard/Etape6.tsx` — inventaire meubles (pièces dynamiques, meublé seulement)
+- [x] `src/components/wizard/Etape7.tsx` — état des lieux (compteurs + pièces dynamiques)
+- [x] `src/components/wizard/Etape8.tsx` — récapitulatif de toutes les données saisies
+- [x] Test complet du tunnel étape 1 → 8 avec des données réelles
 
 ---
 
