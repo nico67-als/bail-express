@@ -53,9 +53,14 @@
 
 ---
 
-## Ensuite (Epic 4 — session suivante)
+## Epic 4 — Génération des PDF (fait)
 
-- Installer Puppeteer
-- Créer les templates HTML/CSS des documents
-- Brancher la route `/api/generate-pdf`
-- Tester la génération d'un vrai PDF
+- [x] Composants `@react-pdf/renderer` des 4 documents (`src/lib/pdf/`)
+- [x] Route `/api/generate-pdf` (POST WizardData -> un seul PDF téléchargeable)
+- [x] Testé en conditions réelles (bail meublé 9 pages, bail vide 6 pages, validation 400 si étape incomplète)
+
+## Ensuite (Epic 5 — session suivante)
+
+- Checkout Stripe (`/api/create-checkout-session` + webhook) pour débloquer la génération
+- Email de livraison du PDF via Resend (avec le rappel des annexes à fournir, cf. `annexes-checklist.md`)
+- Brancher le bouton "Continuer" de l'étape 8 sur le vrai paiement
