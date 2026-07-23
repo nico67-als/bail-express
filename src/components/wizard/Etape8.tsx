@@ -315,8 +315,8 @@ export default function Etape8() {
       </Section>
 
       <div className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-        La génération des documents et le paiement seront disponibles prochainement. Vos
-        données restent enregistrées dans ce navigateur.
+        En cliquant sur « Procéder au paiement », vous serez redirigé vers une page de paiement
+        sécurisée. Vos documents vous seront envoyés par email juste après.
       </div>
     </>
   )

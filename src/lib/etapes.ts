@@ -228,3 +228,14 @@ export function etapeValide(numero: EtapeNum, data: WizardData): boolean {
       return true
   }
 }
+
+const ETAPES_A_VALIDER: EtapeNum[] = [1, 2, 3, 4, 5, 6, 7]
+
+/**
+ * Première étape invalide du parcours (null si tout est renseigné). Utilisé côté serveur
+ * avant de générer un PDF ou de créer une session de paiement : le bouton « Continuer »
+ * bloque déjà l'utilisateur en amont, mais un appel API direct doit être revérifié.
+ */
+export function premiereEtapeInvalide(data: WizardData): EtapeNum | null {
+  return ETAPES_A_VALIDER.find((etape) => !etapeValide(etape, data)) ?? null
+}

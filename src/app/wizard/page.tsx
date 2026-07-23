@@ -1,6 +1,6 @@
 'use client'
 
-import { useSyncExternalStore } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import WizardLayout from '@/components/wizard/WizardLayout'
 import Etape1 from '@/components/wizard/Etape1'
 import Etape2 from '@/components/wizard/Etape2'
@@ -35,6 +35,9 @@ export default function WizardPage() {
   const setEtape = useWizardStore((state) => state.setEtape)
   const syncPieces = useWizardStore((state) => state.syncPieces)
 
+  const [paiementEnCours, setPaiementEnCours] = useState(false)
+  const [erreurPaiement, setErreurPaiement] = useState<string | null>(null)
+
   if (!monte) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
@@ -45,7 +48,40 @@ export default function WizardPage() {
     )
   }
 
+  const derniereEtape = etapeCourante === 8
+
+  const procederAuPaiement = async () => {
+    setPaiementEnCours(true)
+    setErreurPaiement(null)
+
+    try {
+      const reponse = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const resultat = await reponse.json()
+
+      if (!reponse.ok) {
+        setErreurPaiement(resultat.erreur ?? 'Une erreur est survenue.')
+        setPaiementEnCours(false)
+        return
+      }
+
+      // La redirection quitte la page : pas besoin de repasser paiementEnCours à false.
+      window.location.href = resultat.url
+    } catch {
+      setErreurPaiement('Impossible de contacter le serveur de paiement.')
+      setPaiementEnCours(false)
+    }
+  }
+
   const allerSuivant = () => {
+    if (derniereEtape) {
+      procederAuPaiement()
+      return
+    }
+
     // Le type de bail et le nombre de pièces conditionnent les étapes 6 et 7 :
     // on recale les pièces à chaque avancée plutôt que de dépendre d'un seul écran.
     syncPieces()
@@ -71,17 +107,17 @@ export default function WizardPage() {
     </p>
   )
 
-  // Le récapitulatif est la dernière étape développée : le paiement (Epic 5) et la
-  // génération des PDF (Epic 4) n'existent pas encore, donc rien à valider en avançant.
-  const derniereEtape = etapeCourante === 8
-  const bloque = derniereEtape || !etapeValide(etapeCourante, data)
+  const bloque = derniereEtape ? paiementEnCours : !etapeValide(etapeCourante, data)
 
   return (
     <WizardLayout
       onSuivant={allerSuivant}
       suivantDisabled={bloque}
-      suivantLabel={derniereEtape ? 'Paiement — bientôt disponible' : 'Continuer'}
+      suivantLabel={derniereEtape ? (paiementEnCours ? 'Redirection…' : 'Procéder au paiement') : 'Continuer'}
     >
+      {erreurPaiement && (
+        <p className="rounded-xl bg-red-50 p-4 text-sm text-red-800">{erreurPaiement}</p>
+      )}
       {contenu}
     </WizardLayout>
   )
