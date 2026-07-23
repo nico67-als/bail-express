@@ -9,6 +9,7 @@ import Etape4 from '@/components/wizard/Etape4'
 import Etape5 from '@/components/wizard/Etape5'
 import Etape6 from '@/components/wizard/Etape6'
 import Etape7 from '@/components/wizard/Etape7'
+import Etape8 from '@/components/wizard/Etape8'
 import { useWizardStore } from '@/store/wizard-store'
 import { etapeSuivante, etapeValide } from '@/lib/etapes'
 
@@ -61,6 +62,7 @@ export default function WizardPage() {
     5: <Etape5 />,
     6: <Etape6 />,
     7: <Etape7 />,
+    8: <Etape8 />,
   }
 
   const contenu = ETAPES_RENDUES[etapeCourante] ?? (
@@ -69,10 +71,17 @@ export default function WizardPage() {
     </p>
   )
 
-  const bloque = !etapeValide(etapeCourante, data)
+  // Le récapitulatif est la dernière étape développée : le paiement (Epic 5) et la
+  // génération des PDF (Epic 4) n'existent pas encore, donc rien à valider en avançant.
+  const derniereEtape = etapeCourante === 8
+  const bloque = derniereEtape || !etapeValide(etapeCourante, data)
 
   return (
-    <WizardLayout onSuivant={allerSuivant} suivantDisabled={bloque}>
+    <WizardLayout
+      onSuivant={allerSuivant}
+      suivantDisabled={bloque}
+      suivantLabel={derniereEtape ? 'Paiement — bientôt disponible' : 'Continuer'}
+    >
       {contenu}
     </WizardLayout>
   )
