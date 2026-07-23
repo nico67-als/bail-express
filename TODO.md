@@ -7,10 +7,11 @@
 ## Heure 1 — Comptes & environnement (à faire toi-même)
 
 - [ ] Créer compte Vercel → lier au repo GitHub → récupérer token si besoin
-- [ ] Créer compte Stripe → Dashboard → Clés API → copier `sk_test_...` et `pk_test_...`
-- [ ] Dans Stripe : créer 2 produits (Pack Meublé ~29€ / Pack Vide ~25€) → copier les `price_...`
+- [x] Créer compte Stripe → Dashboard → Clés API → copier `sk_test_...` et `pk_test_...`
+- [x] Dans Stripe : créer 2 produits (Pack Meublé 29€ / Pack Vide 19€) → copier les `price_...`
 - [ ] Créer compte Resend → créer une clé API → copier `re_...`
-- [ ] Remplir `.env.local` avec toutes les clés récupérées
+- [ ] Créer un store Vercel Blob → copier `BLOB_READ_WRITE_TOKEN`
+- [ ] Une fois déployé (ou via `stripe listen` en local) : enregistrer le webhook `/api/webhook` → copier `STRIPE_WEBHOOK_SECRET`
 - [ ] Acheter le nom de domaine (OVH ou Namecheap)
 - [ ] `npm run dev` → vérifier que le projet tourne sur http://localhost:3000
 
@@ -59,8 +60,15 @@
 - [x] Route `/api/generate-pdf` (POST WizardData -> un seul PDF téléchargeable)
 - [x] Testé en conditions réelles (bail meublé 9 pages, bail vide 6 pages, validation 400 si étape incomplète)
 
-## Ensuite (Epic 5 — session suivante)
+## Epic 5 — Paiement Stripe et livraison email (code fait, à vérifier en conditions réelles)
 
-- Checkout Stripe (`/api/create-checkout-session` + webhook) pour débloquer la génération
-- Email de livraison du PDF via Resend (avec le rappel des annexes à fournir, cf. `annexes-checklist.md`)
-- Brancher le bouton "Continuer" de l'étape 8 sur le vrai paiement
+- [x] `/api/create-checkout-session` : stocke le wizard sur Blob, crée la session Stripe
+- [x] `/api/webhook` : régénère le PDF, l'héberge sur Blob, l'envoie par email (Resend)
+- [x] `/success` : confirme le paiement auprès de Stripe
+- [x] Étape 8 branchée sur le vrai checkout
+- [ ] Test de bout en bout avec un vrai paiement test Stripe une fois Resend + Blob configurés (bloqué sur les comptes ci-dessus)
+
+## Ensuite
+
+- Rappel des annexes à fournir dans l'email de livraison (cf. `annexes-checklist.md`) — actuellement un simple rappel générique, pas encore personnalisé selon la période de construction du logement
+- Nom de domaine + déploiement Vercel
