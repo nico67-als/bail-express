@@ -45,10 +45,13 @@ async function traiterPaiementReussi(session: Stripe.Checkout.Session) {
   >[0]
   const pdf = await renderToBuffer(document)
 
-  const { url: pdfUrl } = await put(`dossiers/${session.id}.pdf`, pdf, {
-    access: 'public',
+  await put(`dossiers/${session.id}.pdf`, pdf, {
+    access: 'private',
     contentType: 'application/pdf',
   })
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const lienTelechargement = `${appUrl}/api/download/${session.id}`
 
   await resend.emails.send({
     from: FROM_EMAIL,
@@ -58,7 +61,7 @@ async function traiterPaiementReussi(session: Stripe.Checkout.Session) {
       'Bonjour,',
       '',
       'Merci pour votre commande. Vos documents sont prêts, vous les trouverez en pièce jointe et via ce lien de téléchargement :',
-      pdfUrl,
+      lienTelechargement,
       '',
       "Avant de faire signer le bail, pensez à joindre les diagnostics obligatoires (DPE, ERP, et selon l'ancienneté du logement : CREP, amiante, électricité, gaz) que vous avez fait réaliser par un diagnostiqueur certifié.",
       '',

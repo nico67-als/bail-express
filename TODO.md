@@ -6,13 +6,14 @@
 
 ## Heure 1 — Comptes & environnement (à faire toi-même)
 
-- [ ] Créer compte Vercel → lier au repo GitHub → récupérer token si besoin
+- [x] Créer compte Vercel → lier au repo GitHub → déployer le site
 - [x] Créer compte Stripe → Dashboard → Clés API → copier `sk_test_...` et `pk_test_...`
 - [x] Dans Stripe : créer 2 produits (Pack Meublé 29€ / Pack Vide 19€) → copier les `price_...`
-- [ ] Créer compte Resend → créer une clé API → copier `re_...`
-- [ ] Créer un store Vercel Blob → copier `BLOB_READ_WRITE_TOKEN`
-- [ ] Une fois déployé (ou via `stripe listen` en local) : enregistrer le webhook `/api/webhook` → copier `STRIPE_WEBHOOK_SECRET`
-- [ ] Acheter le nom de domaine (OVH ou Namecheap)
+- [x] Créer compte Resend → créer une clé API → copier `re_...`
+- [x] Vérifier le domaine `bail-express.fr` dans Resend (DNS ajoutés, propagation en cours)
+- [x] Créer un store Vercel Blob → copier `BLOB_READ_WRITE_TOKEN`
+- [x] Une fois déployé (ou via `stripe listen` en local) : enregistrer le webhook `/api/webhook` → copier `STRIPE_WEBHOOK_SECRET`
+- [x] Acheter le nom de domaine → `bail-express.fr` (Infomaniak)
 - [ ] `npm run dev` → vérifier que le projet tourne sur http://localhost:3000
 
 ---
@@ -63,10 +64,12 @@
 ## Epic 5 — Paiement Stripe et livraison email (code fait, à vérifier en conditions réelles)
 
 - [x] `/api/create-checkout-session` : stocke le wizard sur Blob, crée la session Stripe
-- [x] `/api/webhook` : régénère le PDF, l'héberge sur Blob, l'envoie par email (Resend)
+- [x] `/api/webhook` : régénère le PDF, l'héberge sur Blob (privé), l'envoie par email (Resend)
+- [x] `/api/download/[sessionId]` : sert le PDF depuis Blob privé après vérification du paiement Stripe (le store Blob ne peut être créé qu'en privé, pas de lien public possible)
 - [x] `/success` : confirme le paiement auprès de Stripe
 - [x] Étape 8 branchée sur le vrai checkout
-- [ ] Test de bout en bout avec un vrai paiement test Stripe une fois Resend + Blob configurés (bloqué sur les comptes ci-dessus)
+- [ ] Ajouter `STRIPE_WEBHOOK_SECRET` dans les variables d'environnement Vercel (production) + redéployer
+- [ ] Test de bout en bout avec un vrai paiement test Stripe (toutes les clés sont maintenant réelles)
 
 ## Ensuite
 
