@@ -4,7 +4,7 @@ import { get, put } from '@vercel/blob'
 import { renderToBuffer } from '@react-pdf/renderer'
 import type Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
-import { resend, FROM_EMAIL } from '@/lib/resend'
+import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '@/lib/resend'
 import DossierDocument from '@/lib/pdf/DossierDocument'
 import type { WizardData } from '@/types'
 
@@ -55,6 +55,7 @@ async function traiterPaiementReussi(session: Stripe.Checkout.Session) {
 
   await resend.emails.send({
     from: FROM_EMAIL,
+    replyTo: REPLY_TO_EMAIL,
     to: data.etape2.email,
     subject: 'Vos documents de location — Bail Express',
     text: [

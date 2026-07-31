@@ -10,7 +10,7 @@
 - [x] Créer compte Stripe → Dashboard → Clés API → copier `sk_test_...` et `pk_test_...`
 - [x] Dans Stripe : créer 2 produits (Pack Meublé 29€ / Pack Vide 19€) → copier les `price_...`
 - [x] Créer compte Resend → créer une clé API → copier `re_...`
-- [x] Vérifier le domaine `bail-express.fr` dans Resend (DNS ajoutés, propagation en cours)
+- [x] Vérifier le domaine `bail-express.fr` dans Resend (vérifié)
 - [x] Créer un store Vercel Blob → copier `BLOB_READ_WRITE_TOKEN`
 - [x] Une fois déployé (ou via `stripe listen` en local) : enregistrer le webhook `/api/webhook` → copier `STRIPE_WEBHOOK_SECRET`
 - [x] Acheter le nom de domaine → `bail-express.fr` (Infomaniak)
@@ -68,7 +68,8 @@
 - [x] `/api/download/[sessionId]` : sert le PDF depuis Blob privé après vérification du paiement Stripe (le store Blob ne peut être créé qu'en privé, pas de lien public possible)
 - [x] `/success` : confirme le paiement auprès de Stripe
 - [x] Étape 8 branchée sur le vrai checkout
-- [ ] Ajouter `STRIPE_WEBHOOK_SECRET` dans les variables d'environnement Vercel (production) + redéployer
+- [x] Envoi depuis `noreply@bail-express.fr` avec `reply-to` vers `contact@bail-express.fr` (boîte créée chez Infomaniak)
+- [ ] Ajouter `STRIPE_WEBHOOK_SECRET`, `RESEND_FROM_EMAIL` et `RESEND_REPLY_TO_EMAIL` dans les variables d'environnement Vercel (production) + redéployer
 - [ ] Test de bout en bout avec un vrai paiement test Stripe (toutes les clés sont maintenant réelles)
 
 ## Ensuite
