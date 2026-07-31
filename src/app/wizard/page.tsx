@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import WizardLayout from '@/components/wizard/WizardLayout'
 import Etape1 from '@/components/wizard/Etape1'
 import Etape2 from '@/components/wizard/Etape2'
@@ -19,6 +19,124 @@ import { etapeSuivante, etapeValide } from '@/lib/etapes'
  * la fin de l'hydratation avant d'afficher le wizard, sans quoi React signale une erreur
  * d'hydratation et repart d'un état vide — les saisies en cours seraient perdues.
  */
+/**
+ * Raccourci de test (`?dev=1`) : évite de retaper les 7 étapes à chaque tentative de
+ * paiement. Génère un dossier meublé valide puis saute directement au récapitulatif.
+ */
+function remplirDonneesTest() {
+  const { updateData, syncPieces, setEtape } = useWizardStore.getState()
+
+  updateData({
+    etape1: { typeBail: 'meuble', usage: 'residence_principale' },
+    etape2: {
+      bailleur: {
+        type: 'physique',
+        civilite: 'M',
+        nom: 'Dupont',
+        prenom: 'Jean',
+        dateNaissance: '1980-05-12',
+        lieuNaissance: 'Paris',
+        nationalite: 'Française',
+        adresse: '10 rue de la Paix, 75002 Paris',
+      },
+      email: 'nicolas.grasser06@gmail.com',
+      telephone: '0612345678',
+    },
+    etape3: {
+      locataires: [
+        {
+          civilite: 'Mme',
+          nom: 'Martin',
+          prenom: 'Claire',
+          dateNaissance: '1990-03-20',
+          lieuNaissance: 'Lyon',
+          nationalite: 'Française',
+          adresseActuelle: '5 avenue Victor Hugo, 69000 Lyon',
+          email: 'locataire-test@example.com',
+        },
+      ],
+    },
+    etape4: {
+      adresse: '20 rue du Test, 75010 Paris',
+      complement: '',
+      typeLogement: 'Appartement',
+      etage: '3e étage',
+      surface: 45,
+      nbPieces: 3,
+      nbChambres: 1,
+      periodeConstruction: 'apres_1989',
+      regimeJuridique: 'copropriete',
+      chauffage: 'Individuel électrique',
+      eauChaude: 'Individuel électrique',
+      cave: false,
+      caveNum: '',
+      parking: false,
+      parkingNum: '',
+      jardin: false,
+      dpeClasse: 'C',
+      gesClasse: 'C',
+      presencePlomb: null,
+      presenceAmiante: null,
+    },
+    etape5: {
+      dateEntree: '2026-09-01',
+      loyerHC: 800,
+      typeCharges: 'provision',
+      montantCharges: 80,
+      datePaiement: '1',
+      modePaiement: 'Virement bancaire',
+      depotGarantie: 1600,
+      revisionIRL: true,
+      trimestreIRL: 'T1',
+      zoneTendue: false,
+      loyerReferenceMajore: '',
+      complementLoyer: '',
+      motifComplement: '',
+    },
+  })
+
+  // Les pièces de l'inventaire (étape 6) et de l'état des lieux (étape 7) dépendent du
+  // nombre de pièces/chambres qu'on vient de fixer : on les régénère avant de les remplir.
+  syncPieces()
+
+  const { data } = useWizardStore.getState()
+
+  updateData({
+    etape6: {
+      pieces: data.etape6.pieces.map((piece) => ({
+        ...piece,
+        meubles: Object.fromEntries(
+          Object.entries(piece.meubles).map(([label, meuble]) => [
+            label,
+            { ...meuble, present: true, etat: 'bon' as const },
+          ])
+        ),
+      })),
+    },
+    etape7: {
+      ...data.etape7,
+      dateEdl: '2026-09-01',
+      nbCles: 2,
+      compteurElecIndex: '12345',
+      compteurEauFroideIndex: '6789',
+      pieces: data.etape7.pieces.map((piece) => ({
+        ...piece,
+        plafond: { etat: 'bon' as const, obs: '' },
+        murs: { etat: 'bon' as const, obs: '' },
+        sol: { etat: 'bon' as const, obs: '' },
+        fenetres: { etat: 'bon' as const, obs: '' },
+        volets: { etat: 'bon' as const, obs: '' },
+        porte: { etat: 'bon' as const, obs: '' },
+        elec: { etat: 'bon' as const, obs: '' },
+        chauffage: { etat: 'bon' as const, obs: '' },
+        luminaire: { etat: 'bon' as const, obs: '' },
+      })),
+    },
+  })
+
+  setEtape(8)
+}
+
 function useHydrate(): boolean {
   return useSyncExternalStore(
     (onChange) => useWizardStore.persist.onFinishHydration(onChange),
@@ -37,6 +155,11 @@ export default function WizardPage() {
 
   const [paiementEnCours, setPaiementEnCours] = useState(false)
   const [erreurPaiement, setErreurPaiement] = useState<string | null>(null)
+  const [modeDev, setModeDev] = useState(false)
+
+  useEffect(() => {
+    setModeDev(new URLSearchParams(window.location.search).get('dev') === '1')
+  }, [])
 
   if (!monte) {
     return (
@@ -117,6 +240,15 @@ export default function WizardPage() {
     >
       {erreurPaiement && (
         <p className="rounded-xl bg-red-50 p-4 text-sm text-red-800">{erreurPaiement}</p>
+      )}
+      {modeDev && (
+        <button
+          type="button"
+          onClick={remplirDonneesTest}
+          className="mb-4 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-50"
+        >
+          🧪 Remplir avec des données de test
+        </button>
       )}
       {contenu}
     </WizardLayout>
