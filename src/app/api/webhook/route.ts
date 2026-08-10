@@ -53,7 +53,7 @@ async function traiterPaiementReussi(session: Stripe.Checkout.Session) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const lienTelechargement = `${appUrl}/api/download/${session.id}`
 
-  await resend.emails.send({
+  const { error: erreurEnvoi } = await resend.emails.send({
     from: FROM_EMAIL,
     replyTo: REPLY_TO_EMAIL,
     to: data.etape2.email,
@@ -72,6 +72,10 @@ async function traiterPaiementReussi(session: Stripe.Checkout.Session) {
     ].join('\n'),
     attachments: [{ filename: 'bail-express-dossier.pdf', content: pdf }],
   })
+
+  if (erreurEnvoi) {
+    throw new Error(`Échec de l'envoi Resend pour la session ${session.id} : ${JSON.stringify(erreurEnvoi)}`)
+  }
 }
 
 export async function POST(request: Request) {
@@ -90,7 +94,15 @@ export async function POST(request: Request) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    await traiterPaiementReussi(event.data.object)
+    try {
+      await traiterPaiementReussi(event.data.object)
+    } catch (erreur) {
+      console.error('Échec du traitement du webhook checkout.session.completed', {
+        sessionId: event.data.object.id,
+        erreur: erreur instanceof Error ? erreur.stack : erreur,
+      })
+      return NextResponse.json({ erreur: 'Échec du traitement.' }, { status: 500 })
+    }
   }
 
   return NextResponse.json({ recu: true })
