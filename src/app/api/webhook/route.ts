@@ -5,6 +5,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import type Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '@/lib/resend'
+import { rappelAnnexes } from '@/lib/annexes'
 import DossierDocument from '@/lib/pdf/DossierDocument'
 import type { WizardData } from '@/types'
 
@@ -64,7 +65,7 @@ async function traiterPaiementReussi(session: Stripe.Checkout.Session) {
       'Merci pour votre commande. Vos documents sont prêts, vous les trouverez en pièce jointe et via ce lien de téléchargement :',
       lienTelechargement,
       '',
-      "Avant de faire signer le bail, pensez à joindre les diagnostics obligatoires (DPE, ERP, et selon l'ancienneté du logement : CREP, amiante, électricité, gaz) que vous avez fait réaliser par un diagnostiqueur certifié.",
+      rappelAnnexes(data),
       '',
       "Ces documents n'ont pas fait l'objet d'une validation juridique et sont fournis à titre indicatif.",
       '',

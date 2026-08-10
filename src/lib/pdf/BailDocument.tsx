@@ -1,6 +1,7 @@
 import { Page, Text, View } from '@react-pdf/renderer'
 import type { WizardData } from '@/types'
 import { styles } from './styles'
+import { diagnosticAmianteRequis, diagnosticPlombRequis } from '@/lib/diagnostics'
 import {
   ajouterMois,
   formatCivilite,
@@ -384,9 +385,22 @@ export default function BailDocument({ data }: { data: WizardData }) {
       {meuble && <Text style={styles.ligneListe}>— Grille de vétusté</Text>}
       <Text style={styles.ligneListe}>— Diagnostic de Performance Énergétique (DPE)</Text>
       <Text style={styles.ligneListe}>— État des Risques et Pollutions (ERP)</Text>
+      {diagnosticPlombRequis(etape4.periodeConstruction) && (
+        <Text style={styles.ligneListe}>
+          — Constat de Risque d&apos;Exposition au Plomb (CREP), logement construit avant 1949
+        </Text>
+      )}
+      {diagnosticAmianteRequis(etape4.periodeConstruction) && (
+        <Text style={styles.ligneListe}>
+          — Diagnostic amiante, logement dont le permis de construire est antérieur à 1997
+        </Text>
+      )}
       <Text style={styles.ligneListe}>
-        — Autres diagnostics obligatoires selon l&apos;ancienneté du logement (CREP, amiante,
-        électricité, gaz, bruit — voir annexe fournie séparément)
+        — Diagnostic électricité et/ou gaz si l&apos;installation correspondante a plus de 15 ans
+      </Text>
+      <Text style={styles.ligneListe}>
+        — État des nuisances sonores aériennes (ENSA) si le logement est situé en zone
+        d&apos;exposition au bruit d&apos;un aéroport
       </Text>
 
       <Text style={styles.piedDePage}>

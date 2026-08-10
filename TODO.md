@@ -61,7 +61,7 @@
 - [x] Route `/api/generate-pdf` (POST WizardData -> un seul PDF téléchargeable)
 - [x] Testé en conditions réelles (bail meublé 9 pages, bail vide 6 pages, validation 400 si étape incomplète)
 
-## Epic 5 — Paiement Stripe et livraison email (code fait, à vérifier en conditions réelles)
+## Epic 5 — Paiement Stripe et livraison email (fait, vérifié en conditions réelles)
 
 - [x] `/api/create-checkout-session` : stocke le wizard sur Blob, crée la session Stripe
 - [x] `/api/webhook` : régénère le PDF, l'héberge sur Blob (privé), l'envoie par email (Resend)
@@ -69,10 +69,11 @@
 - [x] `/success` : confirme le paiement auprès de Stripe
 - [x] Étape 8 branchée sur le vrai checkout
 - [x] Envoi depuis `noreply@bail-express.fr` avec `reply-to` vers `contact@bail-express.fr` (boîte créée chez Infomaniak)
-- [ ] Ajouter `STRIPE_WEBHOOK_SECRET`, `RESEND_FROM_EMAIL` et `RESEND_REPLY_TO_EMAIL` dans les variables d'environnement Vercel (production) + redéployer
-- [ ] Test de bout en bout avec un vrai paiement test Stripe (toutes les clés sont maintenant réelles)
+- [x] Ajouter `STRIPE_WEBHOOK_SECRET`, `RESEND_FROM_EMAIL` et `RESEND_REPLY_TO_EMAIL` dans les variables d'environnement Vercel (production) + redéployer
+- [x] Test de bout en bout avec un vrai paiement test Stripe — PDF reçu par email, confirmé 2026-08-10
+- [x] `/api/webhook` : ajout d'un `try/catch` avec logging + vérification de l'erreur retournée par Resend (silencieuse auparavant) — corrige le crash 500 silencieux découvert lors du premier test réel
 
 ## Ensuite
 
-- Rappel des annexes à fournir dans l'email de livraison (cf. `annexes-checklist.md`) — actuellement un simple rappel générique, pas encore personnalisé selon la période de construction du logement
-- Nom de domaine + déploiement Vercel
+- [x] Rappel des annexes à fournir dans l'email de livraison (cf. `annexes-checklist.md`) — personnalisé selon `periodeConstruction` via `src/lib/annexes.ts` (réutilise `diagnosticPlombRequis`/`diagnosticAmianteRequis` de `src/lib/diagnostics.ts`, déjà utilisés à l'étape 4 et au récapitulatif étape 8)
+- Le PDF du bail (`src/lib/pdf/BailDocument.tsx:388-389`) a encore le même rappel générique non personnalisé — à harmoniser si besoin
